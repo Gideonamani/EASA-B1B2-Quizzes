@@ -100,7 +100,7 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
         </fieldset>
 
         <label className="form-row">
-          <span className="form-row__label">Time limit (minutes)</span>
+          <span className="form-row__label">Total time limit (minutes)</span>
           <input
             type="number"
             min={1}

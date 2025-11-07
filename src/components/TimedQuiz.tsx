@@ -81,6 +81,21 @@ const TimedQuiz = ({ questions, timeLimitMinutes, onExit, onComplete }: Props) =
 
   const unanswered = questions.length - Object.keys(answers).length
 
+  const handleSubmit = () => {
+    if (status !== 'running') {
+      return
+    }
+    if (unanswered > 0) {
+      const confirmed = window.confirm(
+        `You still have ${unanswered} unanswered question${unanswered === 1 ? '' : 's'}. Submit anyway?`,
+      )
+      if (!confirmed) {
+        return
+      }
+    }
+    finalize(false)
+  }
+
   return (
     <section className="panel">
       <header className="panel__header">
@@ -159,7 +174,7 @@ const TimedQuiz = ({ questions, timeLimitMinutes, onExit, onComplete }: Props) =
             <button type="button" className="ghost" onClick={() => handleClear(question.id)}>
               Clear answer
             </button>
-            <button type="button" className="primary" onClick={() => finalize(false)}>
+            <button type="button" className="primary" onClick={handleSubmit}>
               Submit ({unanswered} left)
             </button>
           </div>
