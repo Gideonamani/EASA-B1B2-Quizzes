@@ -16,6 +16,8 @@ npm run dev
 
 You can test the experience immediately with the bundled sample data (`Use bundled sample` in the UI or `public/sample-question-bank.csv`).
 
+Prefer a preview first? The latest build lives on GitHub Pages: https://gideonamani.github.io/EASA-B1B2-Quizzes/ — open it in any modern browser to try the configurator, learning mode, timed mode, and summaries without installing anything.
+
 ## CSV contract
 
 The loader expects the following header names:
