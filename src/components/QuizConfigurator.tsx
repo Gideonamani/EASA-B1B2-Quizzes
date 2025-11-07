@@ -56,8 +56,8 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
       </header>
 
       <form className="config-form" onSubmit={handleSubmit}>
-        <label>
-          Google Sheets publish-to-web CSV URL
+        <label className="form-row">
+          <span className="form-row__label">Google Sheets publish-to-web CSV URL</span>
           <input
             type="url"
             placeholder="https://docs.google.com/spreadsheets/d/..."
@@ -98,8 +98,8 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
           </label>
         </fieldset>
 
-        <label>
-          Time limit (minutes)
+        <label className="form-row">
+          <span className="form-row__label">Time limit (minutes)</span>
           <input
             type="number"
             min={1}
@@ -109,8 +109,8 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
           />
         </label>
 
-        <label>
-          Question cap (optional)
+        <label className="form-row">
+          <span className="form-row__label">Question cap (optional)</span>
           <input
             type="number"
             min={1}

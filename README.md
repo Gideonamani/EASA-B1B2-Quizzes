@@ -25,7 +25,7 @@ The loader expects the following header names:
 | `module`     | High-level ATA area (e.g., Airframe)                  |
 | `submodule`  | Sub-topic (Hydraulics, Lightning, etc.)               |
 | `question`   | Prompt text                                           |
-| `a` – `d`    | Answer options (leave blank if not used)              |
+| `option_a`–`option_d` | Answer choices (leave blank if unused)      |
 | `correct`    | Letter (`a`–`d`) of the correct option                |
 | `explanation`| Optional rationale shown during review               |
 | `difficulty` | Any label (`easy`, `B2`, etc.)                        |

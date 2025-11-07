@@ -5,17 +5,17 @@ interface CsvQuestionRow {
   module?: string
   submodule?: string
   question?: string
-  a?: string
-  b?: string
-  c?: string
-  d?: string
+  option_a?: string
+  option_b?: string
+  option_c?: string
+  option_d?: string
   correct?: string
   explanation?: string
   difficulty?: string
   tags?: string
 }
 
-const OPTION_KEYS = ['a', 'b', 'c', 'd'] as const
+const OPTION_KEYS = ['option_a', 'option_b', 'option_c', 'option_d'] as const
 
 const sanitize = (value?: string) => value?.trim() ?? ''
 
@@ -30,18 +30,15 @@ const randomId = () =>
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2, 11)
 
-const pickOptions = (row: CsvQuestionRow) => {
-  return OPTION_KEYS.map((key) => sanitize(row[key]))
-    .map((value, index) =>
-      value
-        ? {
-            id: OPTION_KEYS[index],
-            label: value,
-          }
-        : null,
-    )
-    .filter(Boolean) as Array<{ id: string; label: string }>
-}
+const pickOptions = (row: CsvQuestionRow) =>
+  OPTION_KEYS.map((key, index) => {
+    const value = sanitize(row[key])
+    if (!value) {
+      return null
+    }
+    const optionId = String.fromCharCode(97 + index) // a, b, c, d
+    return { id: optionId, label: value }
+  }).filter(Boolean) as Array<{ id: string; label: string }>
 
 const mapRowToQuestion = (row: CsvQuestionRow, index: number): QuizQuestion | null => {
   const prompt = sanitize(row.question)
