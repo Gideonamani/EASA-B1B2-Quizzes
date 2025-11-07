@@ -1,4 +1,4 @@
-# EASA B1/B2 Quiz Builder
+# AME Mentor — EASA B1/B2 Quiz Builder
 
 Interactive quiz workbench that ingests your EASA B1/B2 question bank from a published Google Sheets CSV (or any CSV endpoint) and serves two study modes:
 

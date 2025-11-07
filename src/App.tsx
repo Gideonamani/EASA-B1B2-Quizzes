@@ -78,7 +78,7 @@ function App() {
       <header className="app__header">
         <div>
           <p className="eyebrow">EASA B1/B2 Self-Study</p>
-          <h1>Smart practice, faster feedback</h1>
+          <h1>Targeted drills for confident sign-offs</h1>
           <p className="subtle">{quizTitle}</p>
         </div>
       </header>
