@@ -71,12 +71,21 @@ const normalizeGoogleSheetUrl = (input: string) => {
     return input
   }
 
-  const idMatch = input.match(/\/d\/([a-zA-Z0-9-_]+)/)
-  if (!idMatch) {
+  if (/output=csv|format=csv/i.test(input)) {
     return input
   }
 
-  return `https://docs.google.com/spreadsheets/d/${idMatch[1]}/export?format=csv`
+  const publishedMatch = input.match(/\/d\/e\/([a-zA-Z0-9-_]+)/)
+  if (publishedMatch) {
+    return `https://docs.google.com/spreadsheets/d/e/${publishedMatch[1]}/pub?output=csv`
+  }
+
+  const classicMatch = input.match(/\/d\/([a-zA-Z0-9-_]+)/)
+  if (classicMatch) {
+    return `https://docs.google.com/spreadsheets/d/${classicMatch[1]}/export?format=csv`
+  }
+
+  return input
 }
 
 export const fetchQuestionsFromCsv = async (rawUrl: string): Promise<QuizQuestion[]> => {

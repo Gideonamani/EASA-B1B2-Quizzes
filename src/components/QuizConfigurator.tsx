@@ -40,7 +40,8 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
   }
 
   const handleUseSample = () => {
-    setCsvUrl(SAMPLE_PATH)
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    setCsvUrl(`${origin}${SAMPLE_PATH}`)
   }
 
   return (
