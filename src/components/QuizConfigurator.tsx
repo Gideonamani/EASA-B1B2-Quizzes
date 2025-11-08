@@ -25,8 +25,6 @@ interface Props {
   featuredSetsError?: string | null
 }
 
-const SAMPLE_PATH = '/sample-question-bank.csv'
-
 const QuizConfigurator = ({
   loading,
   lastError,
@@ -50,14 +48,6 @@ const QuizConfigurator = ({
       return
     }
     handleStartWithUrl(csvUrl.trim(), sourceLabel)
-  }
-
-  const handleUseSample = () => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    const sampleUrl = `${origin}${SAMPLE_PATH}`
-    setCsvUrl(sampleUrl)
-    setSourceLabel('Bundled sample')
-    setSelectedPresetUrl(null)
   }
 
   const handleStartWithUrl = (url: string, label?: string) => {
@@ -90,9 +80,6 @@ const QuizConfigurator = ({
           <p className="eyebrow">Step 1</p>
           <h2>Load a question bank</h2>
         </div>
-        <button type="button" className="ghost" onClick={handleUseSample} disabled={loading}>
-          Use bundled sample
-        </button>
       </header>
 
       {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
@@ -126,6 +113,11 @@ const QuizConfigurator = ({
       )}
 
       <form className="config-form" onSubmit={handleSubmit}>
+        <div className="panel__subheader">
+          <p className="eyebrow">Step 2</p>
+          <h3>Configure quiz mode</h3>
+        </div>
+
         <label className="form-row">
           <span className="form-row__label">Google Sheets publish-to-web CSV URL</span>
           <input
