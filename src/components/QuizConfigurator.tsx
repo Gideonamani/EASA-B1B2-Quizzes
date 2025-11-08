@@ -9,16 +9,32 @@ export interface QuizConfig {
   shuffle: boolean
 }
 
+export interface FeaturedQuestionSet {
+  label: string
+  url: string
+}
+
 interface Props {
   loading: boolean
   lastError?: string | null
   defaultUrl?: string
   onStart(config: QuizConfig): void
+  featuredSets?: FeaturedQuestionSet[]
+  featuredSetsLoading?: boolean
+  featuredSetsError?: string | null
 }
 
 const SAMPLE_PATH = '/sample-question-bank.csv'
 
-const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Props) => {
+const QuizConfigurator = ({
+  loading,
+  lastError,
+  defaultUrl = '',
+  onStart,
+  featuredSets = [],
+  featuredSetsLoading = false,
+  featuredSetsError = null,
+}: Props) => {
   const [csvUrl, setCsvUrl] = useState(defaultUrl)
   const [mode, setMode] = useState<QuizMode>('learning')
   const [timeLimit, setTimeLimit] = useState(15)
@@ -30,8 +46,17 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
     if (!csvUrl.trim()) {
       return
     }
+    handleStartWithUrl(csvUrl.trim())
+  }
+
+  const handleUseSample = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    setCsvUrl(`${origin}${SAMPLE_PATH}`)
+  }
+
+  const handleStartWithUrl = (url: string) => {
     onStart({
-      csvUrl: csvUrl.trim(),
+      csvUrl: url,
       mode,
       timeLimitMinutes: timeLimit > 0 ? timeLimit : 15,
       questionLimit: questionLimit ? Number(questionLimit) : undefined,
@@ -39,9 +64,9 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
     })
   }
 
-  const handleUseSample = () => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    setCsvUrl(`${origin}${SAMPLE_PATH}`)
+  const handleFeaturedStart = (url: string) => {
+    setCsvUrl(url)
+    handleStartWithUrl(url)
   }
 
   return (
@@ -55,6 +80,36 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
           Use bundled sample
         </button>
       </header>
+
+      {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
+        <div className="preset-block">
+          <div>
+            <p className="eyebrow">Quick start</p>
+            <h3 className="preset-block__title">Start with a curated question set</h3>
+          </div>
+
+          {featuredSetsLoading && <p className="subtle">Loading available question sets…</p>}
+
+          {featuredSetsError && !featuredSetsLoading && <p className="error">{featuredSetsError}</p>}
+
+          {!featuredSetsLoading && !featuredSetsError && featuredSets.length > 0 && (
+            <div className="preset-grid">
+              {featuredSets.map((set) => (
+                <button
+                  type="button"
+                  key={set.url}
+                  className="preset-card"
+                  onClick={() => handleFeaturedStart(set.url)}
+                  disabled={loading}
+                >
+                  <span>{set.label}</span>
+                  <small>Load and combine with the settings below</small>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <form className="config-form" onSubmit={handleSubmit}>
         <label className="form-row">
@@ -72,6 +127,16 @@ const QuizConfigurator = ({ loading, lastError, defaultUrl = '', onStart }: Prop
             CSV endpoint) here.
           </small>
         </label>
+
+        <details className="csv-guidance">
+          <summary>CSV format guide</summary>
+          <p>
+            Include a header row with <code>module</code>, <code>submodule</code>, <code>question</code>,{' '}
+            <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
+            <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
+            question needs a prompt, at least one option, and the letter of the correct option (a–d).
+          </p>
+        </details>
 
         <fieldset className="inline">
           <legend>Quiz mode</legend>
