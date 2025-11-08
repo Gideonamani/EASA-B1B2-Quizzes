@@ -42,6 +42,7 @@ const QuizConfigurator = ({
   const [questionLimit, setQuestionLimit] = useState<number | ''>('')
   const [shuffle, setShuffle] = useState(true)
   const [sourceLabel, setSourceLabel] = useState<string | undefined>(undefined)
+  const [selectedPresetUrl, setSelectedPresetUrl] = useState<string | null>(null)
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -56,6 +57,7 @@ const QuizConfigurator = ({
     const sampleUrl = `${origin}${SAMPLE_PATH}`
     setCsvUrl(sampleUrl)
     setSourceLabel('Bundled sample')
+    setSelectedPresetUrl(null)
   }
 
   const handleStartWithUrl = (url: string, label?: string) => {
@@ -72,11 +74,13 @@ const QuizConfigurator = ({
   const handleFeaturedSelect = (set: FeaturedQuestionSet) => {
     setCsvUrl(set.url)
     setSourceLabel(set.label)
+    setSelectedPresetUrl(set.url)
   }
 
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCsvUrl(event.target.value)
     setSourceLabel(undefined)
+    setSelectedPresetUrl(null)
   }
 
   return (
@@ -108,7 +112,7 @@ const QuizConfigurator = ({
                 <button
                   type="button"
                   key={set.url}
-                  className="preset-card"
+                  className={`preset-card ${selectedPresetUrl === set.url ? 'preset-card--selected' : ''}`}
                   onClick={() => handleFeaturedSelect(set)}
                   disabled={loading}
                 >
