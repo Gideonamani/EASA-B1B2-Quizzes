@@ -1,5 +1,6 @@
 import Papa, { type ParseResult } from 'papaparse'
 import type { QuizQuestion } from '../types'
+import { buildCsvUrl, parseGoogleSheetLink } from './googleSheets'
 
 interface CsvQuestionRow {
   module?: string
@@ -66,30 +67,9 @@ const mapRowToQuestion = (row: CsvQuestionRow, index: number): QuizQuestion | nu
   }
 }
 
-const normalizeGoogleSheetUrl = (input: string) => {
-  if (!input.includes('docs.google.com')) {
-    return input
-  }
-
-  if (/output=csv|format=csv/i.test(input)) {
-    return input
-  }
-
-  const publishedMatch = input.match(/\/d\/e\/([a-zA-Z0-9-_]+)/)
-  if (publishedMatch) {
-    return `https://docs.google.com/spreadsheets/d/e/${publishedMatch[1]}/pub?output=csv`
-  }
-
-  const classicMatch = input.match(/\/d\/([a-zA-Z0-9-_]+)/)
-  if (classicMatch) {
-    return `https://docs.google.com/spreadsheets/d/${classicMatch[1]}/export?format=csv`
-  }
-
-  return input
-}
-
 export const fetchQuestionsFromCsv = async (rawUrl: string): Promise<QuizQuestion[]> => {
-  const url = normalizeGoogleSheetUrl(rawUrl)
+  const linkInfo = parseGoogleSheetLink(rawUrl)
+  const url = buildCsvUrl(linkInfo)
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Unable to download CSV (${response.status})`)

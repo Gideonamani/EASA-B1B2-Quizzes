@@ -42,6 +42,13 @@ Any blank rows are ignored. You can include more than four options by duplicatin
 3. Hit **Publish** and copy the link – it will look like `https://docs.google.com/spreadsheets/d/{spreadsheetId}/pub?...`.
 4. Paste that URL in the app. The loader automatically converts it to the CSV export endpoint.
 
+### Review vs. Highlight sheets
+
+- Each worksheet inside the published workbook is treated as a standalone question set. Use clear names such as `M06_Review` or `M06_Highlights`.
+- If you publish a single sheet (the URL contains `gid=`), AME Mentor loads it immediately.
+- If you publish the entire spreadsheet, the app inspects the workbook, lists every sheet it finds, and lets the user pull *all*, *Review only*, *Highlights only*, or any custom combination—no extra configuration required.
+- This makes it easy to keep Review traps and Book Highlight callouts in the same Google Sheet while still giving students a focused experience.
+
 ## Gh-Pages deployment
 
 The repo ships with `gh-pages` so you can host the quiz as a static site:

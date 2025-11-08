@@ -87,6 +87,22 @@
   color: #0f1f3c;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  color: #3d7bfd;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.link-button:disabled {
+  color: #9ba8c4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 .form-row {
   display: flex;
   align-items: center;
@@ -372,6 +388,29 @@
 .review-card.warn {
   border-color: #ffd5d7;
   background: #fff7f6;
+}
+
+.sheet-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.sheet-option {
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #e2e8f7;
+  border-radius: 0.9rem;
+  background: #fdfefe;
+}
+
+.sheet-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 @media (max-width: 720px) {

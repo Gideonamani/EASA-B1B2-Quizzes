@@ -3,12 +3,27 @@ import QuizConfigurator, { type QuizConfig } from './components/QuizConfigurator
 import LearningQuiz from './components/LearningQuiz'
 import TimedQuiz from './components/TimedQuiz'
 import SummaryPanel from './components/SummaryPanel'
+import SheetSelector from './components/SheetSelector'
 import type { QuizMode, QuizQuestion, QuizSummary } from './types'
 import { fetchQuestionsFromCsv } from './utils/csv'
 import { shuffle } from './utils/shuffle'
 import './App.css'
+import {
+  buildCsvUrl,
+  fetchPublishedSheetList,
+  needsSheetSelection,
+  parseGoogleSheetLink,
+  type SheetLinkInfo,
+  type SheetOption,
+} from './utils/googleSheets'
 
-type View = 'config' | 'quiz' | 'summary'
+type View = 'config' | 'sheet-select' | 'quiz' | 'summary'
+
+interface SheetSelectionState {
+  linkInfo: SheetLinkInfo
+  options: SheetOption[]
+  config: QuizConfig
+}
 
 function App() {
   const [view, setView] = useState<View>('config')
@@ -19,6 +34,26 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [configSnapshot, setConfigSnapshot] = useState<QuizConfig | null>(null)
   const [runKey, setRunKey] = useState(() => Date.now())
+  const [sheetSelection, setSheetSelection] = useState<SheetSelectionState | null>(null)
+
+  const loadQuestionsFromSources = async (urls: string[], config: QuizConfig) => {
+    const questionSets = await Promise.all(urls.map((url) => fetchQuestionsFromCsv(url)))
+    let merged = questionSets.flat()
+    if (!merged.length) {
+      throw new Error('No questions were found in the selected sheets.')
+    }
+    if (config.shuffle) {
+      merged = shuffle(merged)
+    }
+    if (config.questionLimit) {
+      merged = merged.slice(0, config.questionLimit)
+    }
+    setQuestions(merged)
+    setMode(config.mode)
+    setConfigSnapshot(config)
+    setRunKey(Date.now())
+    setView('quiz')
+  }
 
   const handleStart = async (config: QuizConfig) => {
     setLoading(true)
@@ -26,18 +61,16 @@ function App() {
     setSummary(null)
 
     try {
-      let loadedQuestions = await fetchQuestionsFromCsv(config.csvUrl)
-      if (config.shuffle) {
-        loadedQuestions = shuffle(loadedQuestions)
+      const linkInfo = parseGoogleSheetLink(config.csvUrl)
+
+      if (needsSheetSelection(linkInfo)) {
+        const options = await fetchPublishedSheetList(linkInfo)
+        setSheetSelection({ linkInfo, options, config })
+        setView('sheet-select')
+        return
       }
-      if (config.questionLimit) {
-        loadedQuestions = loadedQuestions.slice(0, config.questionLimit)
-      }
-      setQuestions(loadedQuestions)
-      setMode(config.mode)
-      setConfigSnapshot(config)
-      setRunKey(Date.now())
-      setView('quiz')
+
+      await loadQuestionsFromSources([buildCsvUrl(linkInfo)], config)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong while loading the CSV.'
       setError(message)
@@ -53,6 +86,7 @@ function App() {
 
   const handleRestart = () => {
     setView('config')
+    setSheetSelection(null)
   }
 
   const handleRetake = () => {
@@ -63,6 +97,24 @@ function App() {
     setSummary(null)
     setRunKey(Date.now())
     setView('quiz')
+  }
+
+  const handleSheetConfirm = async (gids: string[]) => {
+    if (!sheetSelection) {
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      const urls = gids.map((gid) => buildCsvUrl(sheetSelection.linkInfo, gid))
+      await loadQuestionsFromSources(urls, sheetSelection.config)
+      setSheetSelection(null)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong while loading the selected sheets.'
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const quizTitle = useMemo(() => {
@@ -85,6 +137,15 @@ function App() {
 
       {view === 'config' && (
         <QuizConfigurator loading={loading} lastError={error} defaultUrl="" onStart={handleStart} />
+      )}
+
+      {view === 'sheet-select' && sheetSelection && (
+        <SheetSelector
+          sheets={sheetSelection.options}
+          loading={loading}
+          onConfirm={handleSheetConfirm}
+          onCancel={handleRestart}
+        />
       )}
 
       {view === 'quiz' && !!questions.length && (
