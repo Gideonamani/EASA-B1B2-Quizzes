@@ -82,44 +82,44 @@ const QuizConfigurator = ({
         </div>
       </header>
 
-      {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
-        <div className="preset-block">
-          <div>
-            <p className="eyebrow">Quick start</p>
-            <h3 className="preset-block__title">Start with a curated question set</h3>
-          </div>
+      <div className="panel__subsection">
+        <div>
+          <p className="eyebrow">Step 1</p>
+          <h3>Choose your question bank</h3>
+        </div>
 
-          {featuredSetsLoading && <p className="subtle">Loading available question sets…</p>}
-
-          {featuredSetsError && !featuredSetsLoading && <p className="error">{featuredSetsError}</p>}
-
-          {!featuredSetsLoading && !featuredSetsError && featuredSets.length > 0 && (
-            <div className="preset-grid">
-              {featuredSets.map((set) => (
-                <button
-                  type="button"
-                  key={set.url}
-                  className={`preset-card ${selectedPresetUrl === set.url ? 'preset-card--selected' : ''}`}
-                  onClick={() => handleFeaturedSelect(set)}
-                  disabled={loading}
-                >
-                  <span>{set.label}</span>
-                  <small>Load and combine with the settings below</small>
-                </button>
-              ))}
+        {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
+          <div className="preset-block">
+            <div>
+              <p className="eyebrow">Quick start</p>
+              <h3 className="preset-block__title">Start with a curated question set</h3>
             </div>
-          )}
-        </div>
-      )}
 
-      <form className="config-form" onSubmit={handleSubmit}>
-        <div className="panel__subheader">
-          <p className="eyebrow">Step 2</p>
-          <h3>Configure quiz mode</h3>
-        </div>
+            {featuredSetsLoading && <p className="subtle">Loading available question sets…</p>}
+
+            {featuredSetsError && !featuredSetsLoading && <p className="error">{featuredSetsError}</p>}
+
+            {!featuredSetsLoading && !featuredSetsError && featuredSets.length > 0 && (
+              <div className="preset-grid">
+                {featuredSets.map((set) => (
+                  <button
+                    type="button"
+                    key={set.url}
+                    className={`preset-card ${selectedPresetUrl === set.url ? 'preset-card--selected' : ''}`}
+                    onClick={() => handleFeaturedSelect(set)}
+                    disabled={loading}
+                  >
+                    <span>{set.label}</span>
+                    <small>Load and combine with the settings below</small>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <label className="form-row">
-          <span className="form-row__label">Google Sheets publish-to-web CSV URL</span>
+          <span className="form-row__label">Custom Google Sheets publish-to-web URL</span>
           <input
             type="url"
             placeholder="https://docs.google.com/spreadsheets/d/..."
@@ -143,6 +143,13 @@ const QuizConfigurator = ({
             question needs a prompt, at least one option, and the letter of the correct option (a–d).
           </p>
         </details>
+      </div>
+
+      <form className="config-form" onSubmit={handleSubmit}>
+        <div className="panel__subsection">
+          <p className="eyebrow">Step 2</p>
+          <h3>Configure quiz mode</h3>
+        </div>
 
         <fieldset className="inline">
           <legend>Quiz mode</legend>
