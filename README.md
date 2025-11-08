@@ -68,6 +68,10 @@ public/sample-question-bank.csv  # Ready-to-use example data
 
 - Add spaced repetition scoring so difficult prompts surface more often.
 - Persist recent sessions locally so progress survives refreshes.
+- Let's not forget to nudge the user to create their own question bank based on our schema (builds ownership)
 - Support inline editing / manual question entry for last-minute drills.
+- All quiz caching for offline experience
+- UI to show different list of quizzes available based on default Google SpreadSheet database
+- Since quiz exam prep is by module then understanding analysis should be based on Sub Modules with in that module
 
 Contributions welcome—open an issue with the scenario you have in mind. ✈️
