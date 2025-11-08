@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import QuizConfigurator, { type FeaturedQuestionSet, type QuizConfig } from './components/QuizConfigurator'
 import LearningQuiz from './components/LearningQuiz'
 import TimedQuiz from './components/TimedQuiz'
@@ -202,21 +202,12 @@ function App() {
     setView('quiz')
   }
 
-  const quizTitle = useMemo(() => {
-    if (!questions.length) {
-      return 'Load a CSV to get started'
-    }
-    const uniqueModules = new Set(questions.map((q) => q.module))
-    return `${uniqueModules.size} modules • ${questions.length} questions`
-  }, [questions])
-
   return (
     <div className="app">
       <header className="app__header">
         <div>
           <p className="eyebrow">EASA B1/B2 Self-Study</p>
-          <h1>Targeted drills for confident sign-offs</h1>
-          <p className="subtle">{quizTitle}</p>
+          <h1>Train with purpose. Pass with confidence.</h1>
         </div>
       </header>
 

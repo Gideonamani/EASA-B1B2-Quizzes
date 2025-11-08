@@ -78,21 +78,16 @@ const QuizConfigurator = ({
       <header className="panel__header">
         <div>
           <p className="eyebrow">Step 1</p>
-          <h2>Load a question bank</h2>
+          <h2>Choose your question bank</h2>
         </div>
       </header>
 
       <div className="panel__subsection">
-        <div>
-          <p className="eyebrow">Step 1</p>
-          <h3>Choose your question bank</h3>
-        </div>
-
         {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
           <div className="preset-block">
-            <div>
+            <div className="panel__subheading">
               <p className="eyebrow">Quick start</p>
-              <h3 className="preset-block__title">Start with a curated question set</h3>
+              <h4 className="panel__subheading-title">Start with a curated question set</h4>
             </div>
 
             {featuredSetsLoading && <p className="subtle">Loading available question sets…</p>}
@@ -118,8 +113,13 @@ const QuizConfigurator = ({
           </div>
         )}
 
+        <div className="panel__subheading">
+          <p className="eyebrow">or</p>
+          <h4 className="panel__subheading-title">Insert a custom Google Sheets publish-to-web URL</h4>
+        </div>
+
         <label className="form-row">
-          <span className="form-row__label">Custom Google Sheets publish-to-web URL</span>
+          <span className="form-row__label">Google Sheets published URL</span>
           <input
             type="url"
             placeholder="https://docs.google.com/spreadsheets/d/..."
@@ -148,7 +148,7 @@ const QuizConfigurator = ({
       <form className="config-form" onSubmit={handleSubmit}>
         <div className="panel__subsection">
           <p className="eyebrow">Step 2</p>
-          <h3>Configure quiz mode</h3>
+          <h2>Configure your quiz</h2>
         </div>
 
         <fieldset className="inline">
