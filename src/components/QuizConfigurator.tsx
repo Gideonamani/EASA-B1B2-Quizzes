@@ -7,6 +7,7 @@ export interface QuizConfig {
   timeLimitMinutes: number
   questionLimit?: number
   shuffle: boolean
+  sourceLabel?: string
 }
 
 export interface FeaturedQuestionSet {
@@ -54,19 +55,21 @@ const QuizConfigurator = ({
     setCsvUrl(`${origin}${SAMPLE_PATH}`)
   }
 
-  const handleStartWithUrl = (url: string) => {
+  const handleStartWithUrl = (url: string, sourceLabel?: string) => {
     onStart({
       csvUrl: url,
       mode,
       timeLimitMinutes: timeLimit > 0 ? timeLimit : 15,
       questionLimit: questionLimit ? Number(questionLimit) : undefined,
       shuffle,
+      sourceLabel,
     })
   }
 
   const handleFeaturedStart = (url: string) => {
     setCsvUrl(url)
-    handleStartWithUrl(url)
+    const label = featuredSets.find((set) => set.url === url)?.label
+    handleStartWithUrl(url, label)
   }
 
   return (

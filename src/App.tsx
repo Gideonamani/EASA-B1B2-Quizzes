@@ -4,6 +4,7 @@ import LearningQuiz from './components/LearningQuiz'
 import TimedQuiz from './components/TimedQuiz'
 import SummaryPanel from './components/SummaryPanel'
 import SheetSelector from './components/SheetSelector'
+import SessionPreview from './components/SessionPreview'
 import type { QuizMode, QuizQuestion, QuizSummary } from './types'
 import { fetchQuestionsFromCsv } from './utils/csv'
 import { shuffle } from './utils/shuffle'
@@ -17,12 +18,18 @@ import {
   type SheetOption,
 } from './utils/googleSheets'
 
-type View = 'config' | 'sheet-select' | 'quiz' | 'summary'
+type View = 'config' | 'sheet-select' | 'preview' | 'quiz' | 'summary'
 
 interface SheetSelectionState {
   linkInfo: SheetLinkInfo
   options: SheetOption[]
   config: QuizConfig
+}
+
+interface PendingSession {
+  questions: QuizQuestion[]
+  config: QuizConfig
+  sheetsLabel?: string
 }
 
 const FEATURED_SHEET_URL =
@@ -38,6 +45,7 @@ function App() {
   const [configSnapshot, setConfigSnapshot] = useState<QuizConfig | null>(null)
   const [runKey, setRunKey] = useState(() => Date.now())
   const [sheetSelection, setSheetSelection] = useState<SheetSelectionState | null>(null)
+  const [pendingSession, setPendingSession] = useState<PendingSession | null>(null)
   const [featuredSets, setFeaturedSets] = useState<FeaturedQuestionSet[]>([])
   const [featuredSetsLoading, setFeaturedSetsLoading] = useState(true)
   const [featuredSetsError, setFeaturedSetsError] = useState<string | null>(null)
@@ -102,17 +110,19 @@ function App() {
     if (config.questionLimit) {
       merged = merged.slice(0, config.questionLimit)
     }
-    setQuestions(merged)
-    setMode(config.mode)
-    setConfigSnapshot(config)
-    setRunKey(Date.now())
-    setView('quiz')
+    return merged
+  }
+
+  const openSessionPreview = (questions: QuizQuestion[], config: QuizConfig, sheetsLabel?: string) => {
+    setPendingSession({ questions, config, sheetsLabel })
+    setView('preview')
   }
 
   const handleStart = async (config: QuizConfig) => {
     setLoading(true)
     setError(null)
     setSummary(null)
+    setPendingSession(null)
 
     try {
       const linkInfo = parseGoogleSheetLink(config.csvUrl)
@@ -124,7 +134,8 @@ function App() {
         return
       }
 
-      await loadQuestionsFromSources([buildCsvUrl(linkInfo)], config)
+      const questions = await loadQuestionsFromSources([buildCsvUrl(linkInfo)], config)
+      openSessionPreview(questions, config, config.sourceLabel ?? 'This sheet')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong while loading the CSV.'
       setError(message)
@@ -141,6 +152,7 @@ function App() {
   const handleRestart = () => {
     setView('config')
     setSheetSelection(null)
+    setPendingSession(null)
   }
 
   const handleRetake = () => {
@@ -159,16 +171,36 @@ function App() {
     }
     setLoading(true)
     setError(null)
+    setPendingSession(null)
     try {
       const urls = gids.map((gid) => buildCsvUrl(sheetSelection.linkInfo, gid))
-      await loadQuestionsFromSources(urls, sheetSelection.config)
-      setSheetSelection(null)
+      const questions = await loadQuestionsFromSources(urls, sheetSelection.config)
+      const label = gids.length === sheetSelection.options.length
+        ? 'All sets'
+        : sheetSelection.options
+            .filter((option) => gids.includes(option.gid))
+            .map((option) => option.label)
+            .join(', ')
+      openSessionPreview(questions, sheetSelection.config, label)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong while loading the selected sheets.'
       setError(message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const launchSession = () => {
+    if (!pendingSession) {
+      return
+    }
+    setQuestions(pendingSession.questions)
+    setMode(pendingSession.config.mode)
+    setConfigSnapshot(pendingSession.config)
+    setRunKey(Date.now())
+    setPendingSession(null)
+    setSheetSelection(null)
+    setView('quiz')
   }
 
   const quizTitle = useMemo(() => {
@@ -207,6 +239,18 @@ function App() {
           loading={loading}
           onConfirm={handleSheetConfirm}
           onCancel={handleRestart}
+        />
+      )}
+
+      {view === 'preview' && pendingSession && (
+        <SessionPreview
+          questionCount={pendingSession.questions.length}
+          mode={pendingSession.config.mode}
+          timeLimitMinutes={pendingSession.config.timeLimitMinutes}
+          sheetsLabel={pendingSession.sheetsLabel || pendingSession.config.sourceLabel}
+          shuffle={pendingSession.config.shuffle}
+          onAdjust={handleRestart}
+          onLaunch={launchSession}
         />
       )}
 

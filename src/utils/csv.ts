@@ -1,6 +1,7 @@
 import Papa, { type ParseResult } from 'papaparse'
 import type { QuizQuestion } from '../types'
 import { buildCsvUrl, parseGoogleSheetLink } from './googleSheets'
+import { shuffle } from './shuffle'
 
 interface CsvQuestionRow {
   module?: string
@@ -17,6 +18,12 @@ interface CsvQuestionRow {
 }
 
 const OPTION_KEYS = ['option_a', 'option_b', 'option_c', 'option_d'] as const
+const LETTER_TO_KEY: Record<string, (typeof OPTION_KEYS)[number]> = {
+  a: 'option_a',
+  b: 'option_b',
+  c: 'option_c',
+  d: 'option_d',
+}
 
 const sanitize = (value?: string) => value?.trim() ?? ''
 
@@ -32,14 +39,13 @@ const randomId = () =>
     : Math.random().toString(36).slice(2, 11)
 
 const pickOptions = (row: CsvQuestionRow) =>
-  OPTION_KEYS.map((key, index) => {
+  OPTION_KEYS.map((key) => {
     const value = sanitize(row[key])
     if (!value) {
       return null
     }
-    const optionId = String.fromCharCode(97 + index) // a, b, c, d
-    return { id: optionId, label: value }
-  }).filter(Boolean) as Array<{ id: string; label: string }>
+    return { sourceId: key, label: value }
+  }).filter(Boolean) as Array<{ sourceId: (typeof OPTION_KEYS)[number]; label: string }>
 
 const mapRowToQuestion = (row: CsvQuestionRow, index: number): QuizQuestion | null => {
   const prompt = sanitize(row.question)
@@ -47,20 +53,32 @@ const mapRowToQuestion = (row: CsvQuestionRow, index: number): QuizQuestion | nu
     return null
   }
 
-  const options = pickOptions(row)
+  let options = pickOptions(row)
   if (!options.length) {
     return null
   }
 
-  const correct = sanitize(row.correct).toLowerCase() || options[0].id
+  const correctLetter = sanitize(row.correct).toLowerCase()
+  const correctKey = LETTER_TO_KEY[correctLetter] ?? options[0].sourceId
+
+  options = shuffle(options)
+
+  let resolvedCorrect = 'a'
+  const finalOptions = options.map((option, index) => {
+    const id = String.fromCharCode(97 + index)
+    if (option.sourceId === correctKey) {
+      resolvedCorrect = id
+    }
+    return { id, label: option.label }
+  })
 
   return {
     id: randomId() + '-' + index,
     module: sanitize(row.module) || 'General',
     submodule: sanitize(row.submodule) || 'Core',
     prompt,
-    options,
-    correctOption: correct,
+    options: finalOptions,
+    correctOption: resolvedCorrect,
     explanation: sanitize(row.explanation),
     difficulty: sanitize(row.difficulty),
     tags: normalizeTags(row.tags),

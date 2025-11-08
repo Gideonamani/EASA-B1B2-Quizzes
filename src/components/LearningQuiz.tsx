@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { AnswerMap, QuizQuestion, QuizSummary } from '../types'
 import { buildSummary } from '../utils/summary'
+import Modal from './Modal'
 
 interface Props {
   questions: QuizQuestion[]
@@ -12,6 +13,8 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState<AnswerMap>({})
   const [revealed, setRevealed] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
 
   const question = questions[index]
 
@@ -56,9 +59,17 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
     onComplete(summary)
   }
 
+  const openExitConfirm = () => {
+    setShowMenu(false)
+    setShowExitConfirm(true)
+  }
+
+  const closeExitConfirm = () => setShowExitConfirm(false)
+
   useEffect(() => {
     const current = questions[index]
     setRevealed(Boolean(current && answers[current.id]))
+    setShowMenu(false)
   }, [index, answers, questions])
 
   const explanation = useMemo(() => {
@@ -151,9 +162,44 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
                 Finish session
               </button>
             )}
+            {index < questions.length - 1 && (
+              <div className="dropdown">
+                <button type="button" className="ghost" onClick={() => setShowMenu((value) => !value)}>
+                  More ▾
+                </button>
+                {showMenu && (
+                  <div className="dropdown-menu">
+                    <button type="button" onClick={openExitConfirm}>
+                      Submit for assessment
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </footer>
       </article>
+
+      {showExitConfirm && (
+        <Modal
+          title="Submit for assessment?"
+          actions={
+            <>
+              <button type="button" className="ghost" onClick={closeExitConfirm}>
+                Keep practicing
+              </button>
+              <button type="button" className="primary" onClick={handleFinish}>
+                View summary
+              </button>
+            </>
+          }
+        >
+          <p>
+            You still have {questions.length - index - 1} question{questions.length - index - 1 === 1 ? '' : 's'}
+            remaining. Ending now will grade only the attempted ones.
+          </p>
+        </Modal>
+      )}
     </section>
   )
 }
