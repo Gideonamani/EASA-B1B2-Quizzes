@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { QuizMode } from '../types'
 
 export interface QuizConfig {
@@ -41,35 +41,42 @@ const QuizConfigurator = ({
   const [timeLimit, setTimeLimit] = useState(15)
   const [questionLimit, setQuestionLimit] = useState<number | ''>('')
   const [shuffle, setShuffle] = useState(true)
+  const [sourceLabel, setSourceLabel] = useState<string | undefined>(undefined)
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!csvUrl.trim()) {
       return
     }
-    handleStartWithUrl(csvUrl.trim())
+    handleStartWithUrl(csvUrl.trim(), sourceLabel)
   }
 
   const handleUseSample = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    setCsvUrl(`${origin}${SAMPLE_PATH}`)
+    const sampleUrl = `${origin}${SAMPLE_PATH}`
+    setCsvUrl(sampleUrl)
+    setSourceLabel('Bundled sample')
   }
 
-  const handleStartWithUrl = (url: string, sourceLabel?: string) => {
+  const handleStartWithUrl = (url: string, label?: string) => {
     onStart({
       csvUrl: url,
       mode,
       timeLimitMinutes: timeLimit > 0 ? timeLimit : 15,
       questionLimit: questionLimit ? Number(questionLimit) : undefined,
       shuffle,
-      sourceLabel,
+      sourceLabel: label,
     })
   }
 
-  const handleFeaturedStart = (url: string) => {
-    setCsvUrl(url)
-    const label = featuredSets.find((set) => set.url === url)?.label
-    handleStartWithUrl(url, label)
+  const handleFeaturedSelect = (set: FeaturedQuestionSet) => {
+    setCsvUrl(set.url)
+    setSourceLabel(set.label)
+  }
+
+  const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setCsvUrl(event.target.value)
+    setSourceLabel(undefined)
   }
 
   return (
@@ -102,7 +109,7 @@ const QuizConfigurator = ({
                   type="button"
                   key={set.url}
                   className="preset-card"
-                  onClick={() => handleFeaturedStart(set.url)}
+                  onClick={() => handleFeaturedSelect(set)}
                   disabled={loading}
                 >
                   <span>{set.label}</span>
@@ -121,7 +128,7 @@ const QuizConfigurator = ({
             type="url"
             placeholder="https://docs.google.com/spreadsheets/d/..."
             value={csvUrl}
-            onChange={(event) => setCsvUrl(event.target.value)}
+            onChange={handleUrlChange}
             required
             disabled={loading}
           />

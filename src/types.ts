@@ -19,6 +19,8 @@ export interface ModuleStat {
   correct: number
   total: number
   accuracy: number
+  module?: string
+  submodule?: string
 }
 
 export interface QuestionResult {
@@ -43,7 +45,7 @@ export interface QuizSummary {
   accuracy: number
   strengths: string[]
   focus: string[]
-  byModule: ModuleStat[]
+  bySubmodule: ModuleStat[]
   byTag: ModuleStat[]
   questions: QuestionResult[]
   timing?: {

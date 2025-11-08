@@ -2,13 +2,17 @@ import type { AnswerMap, ModuleStat, QuizMode, QuizQuestion, QuizSummary, Questi
 
 const toPercent = (fraction: number) => Math.round(fraction * 1000) / 10
 
-const buildModuleStats = (questions: QuizQuestion[], answers: AnswerMap) => {
+const buildSubmoduleStats = (questions: QuizQuestion[], answers: AnswerMap) => {
   const stats = new Map<string, ModuleStat>()
 
   questions.forEach((question) => {
     const selected = answers[question.id]
-    const record = stats.get(question.module) ?? {
-      label: question.module,
+    const submodule = question.submodule || 'General'
+    const key = `${question.module}::${submodule}`
+    const record = stats.get(key) ?? {
+      label: submodule,
+      module: question.module,
+      submodule,
       correct: 0,
       total: 0,
       accuracy: 0,
@@ -19,7 +23,7 @@ const buildModuleStats = (questions: QuizQuestion[], answers: AnswerMap) => {
       record.correct += 1
     }
     record.accuracy = record.total ? record.correct / record.total : 0
-    stats.set(question.module, record)
+    stats.set(key, record)
   })
 
   return Array.from(stats.values()).sort((a, b) => b.accuracy - a.accuracy)
@@ -68,17 +72,27 @@ const buildQuestionBreakdown = (questions: QuizQuestion[], answers: AnswerMap): 
     }
   })
 
+const describeStat = (stat: ModuleStat) => {
+  if (stat.submodule && stat.module) {
+    return `${stat.submodule} (${stat.module})`
+  }
+  if (stat.module) {
+    return `${stat.label} (${stat.module})`
+  }
+  return stat.label
+}
+
 const pickStrengths = (stats: ModuleStat[]) =>
   stats
     .filter((stat) => stat.total >= 1 && stat.accuracy >= 0.75)
     .slice(0, 3)
-    .map((stat) => `${stat.label} (${toPercent(stat.accuracy)}%)`)
+    .map((stat) => `${describeStat(stat)} (${toPercent(stat.accuracy)}%)`)
 
 const pickFocusAreas = (stats: ModuleStat[]) =>
   stats
     .filter((stat) => stat.total >= 1 && stat.accuracy < 0.6)
     .slice(0, 3)
-    .map((stat) => `${stat.label} (${toPercent(stat.accuracy)}%)`)
+    .map((stat) => `${describeStat(stat)} (${toPercent(stat.accuracy)}%)`)
 
 export const buildSummary = (
   questions: QuizQuestion[],
@@ -89,7 +103,7 @@ export const buildSummary = (
   const correct = questionBreakdown.filter((item) => item.wasCorrect).length
   const skipped = questionBreakdown.filter((item) => !item.selected).length
   const incorrect = questionBreakdown.length - correct - skipped
-  const byModule = buildModuleStats(questions, answers)
+  const bySubmodule = buildSubmoduleStats(questions, answers)
   const byTag = buildTagStats(questions, answers)
 
   return {
@@ -99,9 +113,9 @@ export const buildSummary = (
     incorrect,
     skipped,
     accuracy: questions.length ? correct / questions.length : 0,
-    strengths: pickStrengths(byModule),
-    focus: pickFocusAreas(byModule.length ? byModule : byTag),
-    byModule,
+    strengths: pickStrengths(bySubmodule),
+    focus: pickFocusAreas(bySubmodule.length ? bySubmodule : byTag),
+    bySubmodule,
     byTag,
     questions: questionBreakdown,
     timing: meta.timing,

@@ -18,7 +18,7 @@ import {
   type SheetOption,
 } from './utils/googleSheets'
 
-type View = 'config' | 'sheet-select' | 'preview' | 'quiz' | 'summary'
+type View = 'config' | 'sheet-select' | 'quiz' | 'summary'
 
 interface SheetSelectionState {
   linkInfo: SheetLinkInfo
@@ -115,7 +115,6 @@ function App() {
 
   const openSessionPreview = (questions: QuizQuestion[], config: QuizConfig, sheetsLabel?: string) => {
     setPendingSession({ questions, config, sheetsLabel })
-    setView('preview')
   }
 
   const handleStart = async (config: QuizConfig) => {
@@ -242,14 +241,14 @@ function App() {
         />
       )}
 
-      {view === 'preview' && pendingSession && (
+      {pendingSession && (
         <SessionPreview
           questionCount={pendingSession.questions.length}
           mode={pendingSession.config.mode}
           timeLimitMinutes={pendingSession.config.timeLimitMinutes}
           sheetsLabel={pendingSession.sheetsLabel || pendingSession.config.sourceLabel}
           shuffle={pendingSession.config.shuffle}
-          onAdjust={handleRestart}
+          onAdjust={() => setPendingSession(null)}
           onLaunch={launchSession}
         />
       )}

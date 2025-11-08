@@ -82,6 +82,10 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
     return question.explanation || 'Review your notes for this topic and try again.'
   }, [revealed, isCorrect, question])
 
+  const unattemptedCount = useMemo(() => {
+    return questions.filter((item) => !answers[item.id]).length
+  }, [answers, questions])
+
   return (
     <section className="panel">
       <header className="panel__header">
@@ -153,19 +157,12 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
 
           <div className="question-actions__group">
             {index < questions.length - 1 && (
-              <button type="button" className="primary" disabled={!answered} onClick={handleNext}>
-                Next question
-              </button>
-            )}
-            {index === questions.length - 1 && (
-              <button type="button" className="primary" onClick={handleFinish}>
-                Finish session
-              </button>
-            )}
-            {index < questions.length - 1 && (
-              <div className="dropdown">
-                <button type="button" className="ghost" onClick={() => setShowMenu((value) => !value)}>
-                  More ▾
+              <div className="dropdown split-button">
+                <button type="button" className="primary split-button__main" disabled={!answered} onClick={handleNext}>
+                  Next question
+                </button>
+                <button type="button" className="split-button__toggle" onClick={() => setShowMenu((value) => !value)}>
+                  ▾
                 </button>
                 {showMenu && (
                   <div className="dropdown-menu">
@@ -175,6 +172,11 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
                   </div>
                 )}
               </div>
+            )}
+            {index === questions.length - 1 && (
+              <button type="button" className="primary" onClick={handleFinish}>
+                Finish session
+              </button>
             )}
           </div>
         </footer>
@@ -194,10 +196,14 @@ const LearningQuiz = ({ questions, onExit, onComplete }: Props) => {
             </>
           }
         >
-          <p>
-            You still have {questions.length - index - 1} question{questions.length - index - 1 === 1 ? '' : 's'}
-            remaining. Ending now will grade only the attempted ones.
-          </p>
+          {unattemptedCount > 0 ? (
+            <p>
+              You still have {unattemptedCount} unattempted question{unattemptedCount === 1 ? '' : 's'}. Ending now will
+              grade only the completed ones.
+            </p>
+          ) : (
+            <p>All questions have been attempted. Submit now to review your performance.</p>
+          )}
         </Modal>
       )}
     </section>

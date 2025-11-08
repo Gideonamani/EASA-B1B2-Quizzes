@@ -444,6 +444,11 @@
   border-bottom: 1px solid #f1f3fb;
 }
 
+.table__row .subtle {
+  display: block;
+  margin-top: 0.2rem;
+}
+
 .table__row:last-child {
   border-bottom: none;
 }
@@ -559,6 +564,38 @@
 
 .dropdown-menu button:hover {
   background: #f0f4ff;
+}
+
+.split-button {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 999px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(61, 123, 253, 0.2);
+}
+
+.split-button__main {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.split-button__toggle {
+  border: none;
+  background: linear-gradient(135deg, #2845b7, #4c7df4);
+  color: #fff;
+  padding: 0 0.9rem;
+  font-weight: 600;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+  cursor: pointer;
+}
+
+.split-button__toggle:focus {
+  outline: none;
+}
+
+.split-button .dropdown-menu {
+  right: 0;
 }
 
 .preview-list {

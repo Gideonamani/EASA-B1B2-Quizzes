@@ -82,16 +82,19 @@ const SummaryPanel = ({ summary, onRestart, onRetake }: Props) => {
       </section>
 
       <section>
-        <h3>Performance by module</h3>
+        <h3>Performance by submodule</h3>
         <div className="table">
           <div className="table__row table__head">
-            <span>Module</span>
+            <span>Submodule</span>
             <span>Accuracy</span>
             <span>Questions</span>
           </div>
-          {summary.byModule.map((stat) => (
-            <div key={stat.label} className="table__row">
-              <span>{stat.label}</span>
+          {summary.bySubmodule.map((stat) => (
+            <div key={`${stat.module}-${stat.submodule ?? stat.label}`} className="table__row">
+              <span>
+                <strong>{stat.submodule ?? stat.label}</strong>
+                {stat.module && <div className="subtle">{stat.module}</div>}
+              </span>
               <span>{formatPercent(stat.accuracy)}</span>
               <span>{stat.total}</span>
             </div>
