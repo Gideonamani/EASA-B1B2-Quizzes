@@ -113,36 +113,38 @@ const QuizConfigurator = ({
           </div>
         )}
 
-        <div className="panel__subheading">
-          <p className="eyebrow">or</p>
-          <h4 className="panel__subheading-title">Insert a custom Google Sheets publish-to-web URL</h4>
+        <div className="preset-block">
+          <div className="panel__subheading">
+            <p className="eyebrow">or</p>
+            <h4 className="panel__subheading-title">Insert a custom Google Sheets publish-to-web URL</h4>
+          </div>
+
+          <label className="form-row">
+            <span className="form-row__label">Google Sheets published URL</span>
+            <input
+              type="url"
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              value={csvUrl}
+              onChange={handleUrlChange}
+              required
+              disabled={loading}
+            />
+            <small>
+              From Google Sheets: <em>File → Share → Publish to web → CSV</em>. Paste the generated link (or any
+              CSV endpoint) here.
+            </small>
+          </label>
+
+          <details className="csv-guidance">
+            <summary>CSV format guide</summary>
+            <p>
+              Include a header row with <code>module</code>, <code>submodule</code>, <code>question</code>,{' '}
+              <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
+              <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
+              question needs a prompt, at least one option, and the letter of the correct option (a–d).
+            </p>
+          </details>
         </div>
-
-        <label className="form-row">
-          <span className="form-row__label">Google Sheets published URL</span>
-          <input
-            type="url"
-            placeholder="https://docs.google.com/spreadsheets/d/..."
-            value={csvUrl}
-            onChange={handleUrlChange}
-            required
-            disabled={loading}
-          />
-          <small>
-            From Google Sheets: <em>File → Share → Publish to web → CSV</em>. Paste the generated link (or any
-            CSV endpoint) here.
-          </small>
-        </label>
-
-        <details className="csv-guidance">
-          <summary>CSV format guide</summary>
-          <p>
-            Include a header row with <code>module</code>, <code>submodule</code>, <code>question</code>,{' '}
-            <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
-            <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
-            question needs a prompt, at least one option, and the letter of the correct option (a–d).
-          </p>
-        </details>
       </div>
 
       <form className="config-form" onSubmit={handleSubmit}>
