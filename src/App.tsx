@@ -35,7 +35,7 @@ interface PendingSession {
 
 const FEATURED_SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRm9auFh31r-1f2cVzGlGTxxfonbH-m7eiGa_mKwYRZO4F0yuZRJob4BubJ8SH2y3a5Rb12Ccbf-axu/pub?output=csv'
-const FEEDBACK_FORM_URL = 'https://forms.gle/ameMentorFeedback'
+const FEEDBACK_FORM_URL = 'https://forms.gle/GRX5q3jSckqUL43d9'
 
 const getInitialTheme = (): 'light' | 'dark' => {
   if (typeof window === 'undefined') {
