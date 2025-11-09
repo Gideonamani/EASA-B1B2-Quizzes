@@ -16,6 +16,9 @@ export interface FeaturedQuestionSet {
   url: string
 }
 
+const DEFAULT_QUESTION_BANK_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRm9auFh31r-1f2cVzGlGTxxfonbH-m7eiGa_mKwYRZO4F0yuZRJob4BubJ8SH2y3a5Rb12Ccbf-axu/pubhtml'
+
 interface Props {
   loading: boolean
   lastError?: string | null
@@ -182,6 +185,13 @@ const QuizConfigurator = ({
                 <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
                 <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
                 question needs a prompt, at least one option, and the letter of the correct option (a–d).
+              </p>
+              <p>
+                Need a reference?{' '}
+                <a href={DEFAULT_QUESTION_BANK_URL} target="_blank" rel="noreferrer">
+                  View our default question bank layout
+                </a>{' '}
+                to see how the columns are structured.
               </p>
             </details>
           </div>
