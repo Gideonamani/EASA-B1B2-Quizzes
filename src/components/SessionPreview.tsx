@@ -21,7 +21,7 @@ const SessionPreview = ({
   onAdjust,
   onLaunch,
 }: Props) => {
-  const layoutLabel = questionLayout === 'list' ? 'All questions (list view)' : 'Single-card (one at a time)'
+  const layoutLabel = questionLayout === 'list' ? 'All questions (list view)' : 'Single-card (one question at a time)'
 
   return (
     <Modal
