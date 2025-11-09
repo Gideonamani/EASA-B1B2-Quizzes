@@ -42,16 +42,8 @@ const QuizConfigurator = ({
   const [shuffle, setShuffle] = useState(true)
   const [sourceLabel, setSourceLabel] = useState<string | undefined>(undefined)
   const [selectedPresetUrl, setSelectedPresetUrl] = useState<string | null>(null)
-  const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>(
-    featuredSets.length ? 'quickstart' : 'custom',
-  )
+  const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>('quickstart')
   const [questionLayout, setQuestionLayout] = useState<'single' | 'list'>('single')
-
-  useEffect(() => {
-    if (!featuredSetsLoading && !featuredSets.length && activeBankTab === 'quickstart') {
-      setActiveBankTab('custom')
-    }
-  }, [featuredSetsLoading, featuredSets.length, activeBankTab])
 
   useEffect(() => {
     if (mode === 'timed' && questionLayout === 'list') {
@@ -119,7 +111,7 @@ const QuizConfigurator = ({
             className={`panel-tab ${activeBankTab === 'custom' ? 'active' : ''}`}
             onClick={() => setActiveBankTab('custom')}
           >
-            Custom Google Sheet
+            Or Customise
           </button>
         </div>
 
