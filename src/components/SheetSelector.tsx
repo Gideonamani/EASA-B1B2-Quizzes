@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { SheetOption } from '../utils/googleSheets'
+import type { SheetMetadataMap } from '../utils/sheetConfig'
+import { normalizeSheetLabel } from '../utils/sheetConfig'
 
 interface Props {
   sheets: SheetOption[]
+  metadata?: SheetMetadataMap
   loading: boolean
   onConfirm(selectedGids: string[]): void
   onCancel(): void
 }
 
-const SheetSelector = ({ sheets, loading, onConfirm, onCancel }: Props) => {
+const SheetSelector = ({ sheets, metadata, loading, onConfirm, onCancel }: Props) => {
   const [selection, setSelection] = useState<Set<string>>(new Set(sheets.map((sheet) => sheet.gid)))
 
   useEffect(() => {
@@ -72,17 +75,24 @@ const SheetSelector = ({ sheets, loading, onConfirm, onCancel }: Props) => {
       </header>
 
       <div className="sheet-list">
-        {sheets.map((sheet) => (
-          <label key={sheet.gid} className="checkbox sheet-option">
-            <input
-              type="checkbox"
-              checked={selection.has(sheet.gid)}
-              onChange={() => toggle(sheet.gid)}
-              disabled={loading}
-            />
-            <span>{sheet.label}</span>
-          </label>
-        ))}
+        {sheets.map((sheet) => {
+          const meta = metadata ? metadata[normalizeSheetLabel(sheet.label)] : undefined
+          return (
+            <label key={sheet.gid} className="checkbox sheet-option">
+              <input
+                type="checkbox"
+                checked={selection.has(sheet.gid)}
+                onChange={() => toggle(sheet.gid)}
+                disabled={loading}
+              />
+              <div className="sheet-option__content">
+                <span className="sheet-option__title">{sheet.label}</span>
+                {meta?.module && <small className="sheet-option__module">{meta.module}</small>}
+                {meta?.summary && <p className="sheet-option__summary">{meta.summary}</p>}
+              </div>
+            </label>
+          )
+        })}
       </div>
 
       <footer className="sheet-actions">

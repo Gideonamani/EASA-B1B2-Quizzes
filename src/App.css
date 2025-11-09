@@ -287,9 +287,20 @@
   background: linear-gradient(135deg, rgba(61, 123, 253, 0.12), rgba(99, 203, 255, 0.08));
 }
 
-.preset-card small {
-  font-weight: 400;
+.preset-card__title {
+  font-size: 1.05rem;
+}
+
+.preset-card__module {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.preset-card__summary {
+  margin: 0;
+  font-size: 0.9rem;
   color: var(--color-text-muted);
+  text-align: left;
 }
 
 .preset-card:hover:not(:disabled) {
@@ -715,11 +726,38 @@
 
 .sheet-option {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.65rem 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: 0.9rem;
   background: var(--color-surface);
+}
+
+.sheet-option input {
+  margin-right: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.sheet-option__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sheet-option__title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sheet-option__module {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.sheet-option__summary {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
 }
 
 .sheet-actions {

@@ -18,6 +18,12 @@ import {
   type SheetLinkInfo,
   type SheetOption,
 } from './utils/googleSheets'
+import {
+  fetchSheetMetadata,
+  normalizeSheetLabel,
+  partitionSheetOptions,
+  type SheetMetadataMap,
+} from './utils/sheetConfig'
 
 type View = 'config' | 'sheet-select' | 'quiz' | 'summary'
 
@@ -25,6 +31,7 @@ interface SheetSelectionState {
   linkInfo: SheetLinkInfo
   options: SheetOption[]
   config: QuizConfig
+  metadata: SheetMetadataMap
 }
 
 interface PendingSession {
@@ -74,30 +81,34 @@ function App() {
   }, [theme])
 
   useEffect(() => {
-    const linkInfo = parseGoogleSheetLink(FEATURED_SHEET_URL)
-
     const loadFeaturedSets = async () => {
+      const linkInfo = parseGoogleSheetLink(FEATURED_SHEET_URL)
       setFeaturedSetsLoading(true)
       setFeaturedSetsError(null)
 
       try {
         if (linkInfo.kind === 'google-sheet') {
-          if (needsSheetSelection(linkInfo)) {
-            const options = await fetchPublishedSheetList(linkInfo)
-            setFeaturedSets(
-              options.map((option) => ({
+          const sheetOptions = await fetchPublishedSheetList(linkInfo)
+          const { questionSheets, configSheet } = partitionSheetOptions(sheetOptions)
+          let metadata: SheetMetadataMap = {}
+
+          try {
+            metadata = await fetchSheetMetadata(linkInfo, configSheet)
+          } catch {
+            metadata = {}
+          }
+
+          setFeaturedSets(
+            questionSheets.map((option) => {
+              const meta = metadata[normalizeSheetLabel(option.label)]
+              return {
                 label: option.label,
                 url: buildCsvUrl(linkInfo, option.gid),
-              })),
-            )
-          } else {
-            setFeaturedSets([
-              {
-                label: 'Question bank',
-                url: buildCsvUrl(linkInfo),
-              },
-            ])
-          }
+                module: meta?.module,
+                summary: meta?.summary,
+              }
+            }),
+          )
         } else {
           setFeaturedSets([
             {
@@ -150,8 +161,17 @@ function App() {
       const linkInfo = parseGoogleSheetLink(config.csvUrl)
 
       if (needsSheetSelection(linkInfo)) {
-        const options = await fetchPublishedSheetList(linkInfo)
-        setSheetSelection({ linkInfo, options, config })
+        const sheetOptions = await fetchPublishedSheetList(linkInfo)
+        const { questionSheets, configSheet } = partitionSheetOptions(sheetOptions)
+
+        let metadata: SheetMetadataMap = {}
+        try {
+          metadata = await fetchSheetMetadata(linkInfo, configSheet)
+        } catch {
+          metadata = {}
+        }
+
+        setSheetSelection({ linkInfo, options: questionSheets, config, metadata })
         setView('sheet-select')
         return
       }
@@ -264,6 +284,7 @@ function App() {
       {view === 'sheet-select' && sheetSelection && (
         <SheetSelector
           sheets={sheetSelection.options}
+          metadata={sheetSelection.metadata}
           loading={loading}
           onConfirm={handleSheetConfirm}
           onCancel={handleRestart}

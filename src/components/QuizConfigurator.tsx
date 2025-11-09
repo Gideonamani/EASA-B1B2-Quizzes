@@ -14,6 +14,8 @@ export interface QuizConfig {
 export interface FeaturedQuestionSet {
   label: string
   url: string
+  module?: string
+  summary?: string
 }
 
 const DEFAULT_QUESTION_BANK_URL =
@@ -146,8 +148,11 @@ const QuizConfigurator = ({
                     onClick={() => handleFeaturedSelect(set)}
                     disabled={loading}
                   >
-                    <span>{set.label}</span>
-                    <small>Load and combine with the settings below</small>
+                    <span className="preset-card__title">{set.label}</span>
+                    {set.module && <small className="preset-card__module">{set.module}</small>}
+                    <p className="preset-card__summary">
+                      {set.summary || 'Load and combine with the settings below'}
+                    </p>
                   </button>
                 ))}
               </div>

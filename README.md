@@ -49,6 +49,23 @@ Any blank rows are ignored. You can include more than four options by duplicatin
 - If you publish the entire spreadsheet, the app inspects the workbook, lists every sheet it finds, and lets the user pull *all*, *Review only*, *Highlights only*, or any custom combination—no extra configuration required.
 - This makes it easy to keep Review traps and Book Highlight callouts in the same Google Sheet while still giving students a focused experience.
 
+### Optional `_config` metadata sheet
+
+Want richer previews for every set? Add a worksheet literally named `_config` alongside your question sheets. Publish it with the rest of the workbook and include at least these columns:
+
+| Column      | Purpose                                                                 |
+| ----------- | ----------------------------------------------------------------------- |
+| `SheetName` | The tab name of the question sheet this row describes (`Mod06_Review`)  |
+| `Module`    | Display label for the module/category (e.g., `Materials and Hardware`)  |
+| `SetSummary`| Short blurb surfaced in the UI (e.g., “Questions based on class review”)|
+
+`SheetName` values must match the sheet tabs exactly (case-insensitive). `SetSummary` and `Module` are optional, and you can also use `Summary` instead of `SetSummary` if you prefer. When the `_config` sheet is present, the configurator automatically:
+
+- Enriches the Quick Start cards with the module + summary text so users know what they’re about to load.
+- Shows the same context inside the sheet selector when a workbook contains multiple sets.
+
+If no `_config` sheet exists, the UI gracefully falls back to the previous generic copy, so it’s safe to introduce this metadata incrementally.
+
 ## Gh-Pages deployment
 
 The repo ships with `gh-pages` so you can host the quiz as a static site:
