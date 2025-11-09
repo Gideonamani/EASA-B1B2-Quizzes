@@ -35,6 +35,7 @@ interface PendingSession {
 
 const FEATURED_SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRm9auFh31r-1f2cVzGlGTxxfonbH-m7eiGa_mKwYRZO4F0yuZRJob4BubJ8SH2y3a5Rb12Ccbf-axu/pub?output=csv'
+const FEEDBACK_FORM_URL = 'https://forms.gle/ameMentorFeedback'
 
 function App() {
   const [view, setView] = useState<View>('config')
@@ -204,7 +205,8 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <>
+      <div className="app">
       <header className="app__header">
         <div>
           <p className="eyebrow">EASA B1/B2 Self-Study</p>
@@ -269,6 +271,15 @@ function App() {
         <SummaryPanel summary={summary} onRestart={handleRestart} onRetake={handleRetake} />
       )}
     </div>
+    <footer className="app-footer">
+      <p>
+        Have comments or suggestions?{' '}
+        <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer">
+          Send us a quick note ↗
+        </a>
+      </p>
+    </footer>
+    </>
   )
 }
 

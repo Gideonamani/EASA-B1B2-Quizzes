@@ -30,6 +30,19 @@
   margin-bottom: 2rem;
 }
 
+.app-footer {
+  margin: 2rem auto 0;
+  text-align: center;
+  padding: 1.5rem 1rem 3rem;
+  color: #5b6786;
+  font-size: 0.95rem;
+}
+
+.app-footer a {
+  color: #3d7bfd;
+  font-weight: 600;
+}
+
 .panel__header {
   display: flex;
   justify-content: space-between;
