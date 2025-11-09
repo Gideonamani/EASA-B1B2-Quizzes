@@ -205,7 +205,7 @@ const QuizConfigurator = ({
               onChange={() => setMode('learning')}
               disabled={loading}
             />
-            Learning — one question at a time with instant feedback
+            Learning practice — review one question at a time with instant feedback
           </label>
           <label className="radio">
             <input
@@ -216,7 +216,7 @@ const QuizConfigurator = ({
               onChange={() => setMode('timed')}
               disabled={loading}
             />
-            Timed exam — full set with answers revealed at the end
+            Timed exam — attempt the full set with answers revealed only at the end
           </label>
         </fieldset>
 
@@ -263,7 +263,7 @@ const QuizConfigurator = ({
               onChange={() => setQuestionLayout('single')}
               disabled={loading}
             />
-            One question at a time
+            Single-Card View - Focus on one question before moving to the next.
           </label>
           <label className={`radio ${mode === 'timed' ? 'radio--disabled' : ''}`}>
             <input
@@ -274,9 +274,8 @@ const QuizConfigurator = ({
               onChange={() => setQuestionLayout('list')}
               disabled={loading || mode === 'timed'}
             />
-            Full list (best for review sessions)
+            Full list View - See the whole list of available questions in the set. 
           </label>
-          {mode === 'timed' && <p className="subtle">List view is available in Learning mode only.</p>}
         </fieldset>
 
         {formError && <p className="error">{formError}</p>}
