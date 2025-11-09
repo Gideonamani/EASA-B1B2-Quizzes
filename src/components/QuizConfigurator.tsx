@@ -20,6 +20,7 @@ export interface FeaturedQuestionSet {
 
 const DEFAULT_QUESTION_BANK_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRm9auFh31r-1f2cVzGlGTxxfonbH-m7eiGa_mKwYRZO4F0yuZRJob4BubJ8SH2y3a5Rb12Ccbf-axu/pubhtml'
+const TIMED_MODE_TOOLTIP = "Timed exams don't have instant feedback. Answers stay editable."
 
 interface Props {
   loading: boolean
@@ -216,7 +217,7 @@ const QuizConfigurator = ({
             />
             Learning practice — review one question at a time with instant feedback
           </label>
-          <label className="radio">
+          <label className="radio" title={TIMED_MODE_TOOLTIP}>
             <input
               type="radio"
               name="mode"
@@ -224,6 +225,7 @@ const QuizConfigurator = ({
               checked={mode === 'timed'}
               onChange={() => setMode('timed')}
               disabled={loading}
+              title={TIMED_MODE_TOOLTIP}
             />
             Timed exam — attempt the full set with answers revealed only at the end
           </label>
@@ -285,9 +287,6 @@ const QuizConfigurator = ({
             />
             Full list View — See the whole list of available questions in the set.
           </label>
-          {mode === 'timed' && (
-            <p className="subtle">Timed exams show the entire set without instant feedback. Answers stay editable.</p>
-          )}
         </fieldset>
 
         {formError && <p className="error">{formError}</p>}
