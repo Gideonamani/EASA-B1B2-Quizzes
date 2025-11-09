@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import type { QuizMode } from '../types'
 
 export interface QuizConfig {
@@ -41,6 +41,15 @@ const QuizConfigurator = ({
   const [shuffle, setShuffle] = useState(true)
   const [sourceLabel, setSourceLabel] = useState<string | undefined>(undefined)
   const [selectedPresetUrl, setSelectedPresetUrl] = useState<string | null>(null)
+  const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>(
+    featuredSets.length ? 'quickstart' : 'custom',
+  )
+
+  useEffect(() => {
+    if (!featuredSetsLoading && !featuredSets.length && activeBankTab === 'quickstart') {
+      setActiveBankTab('custom')
+    }
+  }, [featuredSetsLoading, featuredSets.length, activeBankTab])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -65,6 +74,7 @@ const QuizConfigurator = ({
     setCsvUrl(set.url)
     setSourceLabel(set.label)
     setSelectedPresetUrl(set.url)
+    setActiveBankTab('quickstart')
   }
 
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +93,28 @@ const QuizConfigurator = ({
       </header>
 
       <div className="panel__subsection">
-        {(featuredSetsLoading || featuredSetsError || featuredSets.length > 0) && (
+        <div className="panel-tabs" role="tablist" aria-label="Question bank source">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeBankTab === 'quickstart'}
+            className={`panel-tab ${activeBankTab === 'quickstart' ? 'active' : ''}`}
+            onClick={() => setActiveBankTab('quickstart')}
+          >
+            Quick start
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeBankTab === 'custom'}
+            className={`panel-tab ${activeBankTab === 'custom' ? 'active' : ''}`}
+            onClick={() => setActiveBankTab('custom')}
+          >
+            Custom Google Sheet
+          </button>
+        </div>
+
+        {activeBankTab === 'quickstart' ? (
           <div className="preset-block">
             <div className="panel__subheading">
               <p className="eyebrow">Quick start</p>
@@ -94,7 +125,7 @@ const QuizConfigurator = ({
 
             {featuredSetsError && !featuredSetsLoading && <p className="error">{featuredSetsError}</p>}
 
-            {!featuredSetsLoading && !featuredSetsError && featuredSets.length > 0 && (
+            {!featuredSetsLoading && !featuredSetsError && featuredSets.length > 0 ? (
               <div className="preset-grid">
                 {featuredSets.map((set) => (
                   <button
@@ -109,42 +140,44 @@ const QuizConfigurator = ({
                   </button>
                 ))}
               </div>
+            ) : (
+              <p className="subtle">No curated sets are available right now. Switch to the custom tab to paste your own CSV.</p>
             )}
           </div>
-        )}
+        ) : (
+          <div className="preset-block">
+            <div className="panel__subheading">
+              <p className="eyebrow">Custom source</p>
+              <h4 className="panel__subheading-title">Insert a Google Sheets publish-to-web URL</h4>
+            </div>
 
-        <div className="preset-block">
-          <div className="panel__subheading">
-            <p className="eyebrow">or</p>
-            <h4 className="panel__subheading-title">Insert a custom Google Sheets publish-to-web URL</h4>
+            <label className="form-row">
+              <span className="form-row__label">Google Sheets published URL</span>
+              <input
+                type="url"
+                placeholder="https://docs.google.com/spreadsheets/d/..."
+                value={csvUrl}
+                onChange={handleUrlChange}
+                required
+                disabled={loading}
+              />
+              <small>
+                From Google Sheets: <em>File → Share → Publish to web → CSV</em>. Paste the generated link (or any
+                CSV endpoint) here.
+              </small>
+            </label>
+
+            <details className="csv-guidance">
+              <summary>CSV format guide</summary>
+              <p>
+                Include a header row with <code>module</code>, <code>submodule</code>, <code>question</code>,{' '}
+                <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
+                <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
+                question needs a prompt, at least one option, and the letter of the correct option (a–d).
+              </p>
+            </details>
           </div>
-
-          <label className="form-row">
-            <span className="form-row__label">Google Sheets published URL</span>
-            <input
-              type="url"
-              placeholder="https://docs.google.com/spreadsheets/d/..."
-              value={csvUrl}
-              onChange={handleUrlChange}
-              required
-              disabled={loading}
-            />
-            <small>
-              From Google Sheets: <em>File → Share → Publish to web → CSV</em>. Paste the generated link (or any
-              CSV endpoint) here.
-            </small>
-          </label>
-
-          <details className="csv-guidance">
-            <summary>CSV format guide</summary>
-            <p>
-              Include a header row with <code>module</code>, <code>submodule</code>, <code>question</code>,{' '}
-              <code>option_a</code>, <code>option_b</code>, <code>option_c</code>, <code>option_d</code>,{' '}
-              <code>correct</code>, <code>explanation</code>, <code>difficulty</code>, and <code>tags</code>. Each
-              question needs a prompt, at least one option, and the letter of the correct option (a–d).
-            </p>
-          </details>
-        </div>
+        )}
       </div>
 
       <form className="config-form" onSubmit={handleSubmit}>
