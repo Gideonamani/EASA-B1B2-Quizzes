@@ -8,6 +8,7 @@ export interface QuizConfig {
   questionLimit?: number
   shuffle: boolean
   sourceLabel?: string
+  questionLayout: 'single' | 'list'
 }
 
 export interface FeaturedQuestionSet {
@@ -44,12 +45,19 @@ const QuizConfigurator = ({
   const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>(
     featuredSets.length ? 'quickstart' : 'custom',
   )
+  const [questionLayout, setQuestionLayout] = useState<'single' | 'list'>('single')
 
   useEffect(() => {
     if (!featuredSetsLoading && !featuredSets.length && activeBankTab === 'quickstart') {
       setActiveBankTab('custom')
     }
   }, [featuredSetsLoading, featuredSets.length, activeBankTab])
+
+  useEffect(() => {
+    if (mode === 'timed' && questionLayout === 'list') {
+      setQuestionLayout('single')
+    }
+  }, [mode, questionLayout])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -67,6 +75,7 @@ const QuizConfigurator = ({
       questionLimit: questionLimit ? Number(questionLimit) : undefined,
       shuffle,
       sourceLabel: label,
+      questionLayout,
     })
   }
 
@@ -243,6 +252,33 @@ const QuizConfigurator = ({
           <input type="checkbox" checked={shuffle} onChange={() => setShuffle((value) => !value)} disabled={loading} />
           Shuffle questions
         </label>
+
+        <fieldset className="inline">
+          <legend>Question layout</legend>
+          <label className="radio">
+            <input
+              type="radio"
+              name="layout"
+              value="single"
+              checked={questionLayout === 'single'}
+              onChange={() => setQuestionLayout('single')}
+              disabled={loading}
+            />
+            One question at a time
+          </label>
+          <label className={`radio ${mode === 'timed' ? 'radio--disabled' : ''}`}>
+            <input
+              type="radio"
+              name="layout"
+              value="list"
+              checked={questionLayout === 'list'}
+              onChange={() => setQuestionLayout('list')}
+              disabled={loading || mode === 'timed'}
+            />
+            Full list (best for review sessions)
+          </label>
+          {mode === 'timed' && <p className="subtle">List view is available in Learning mode only.</p>}
+        </fieldset>
 
         {lastError && <p className="error">{lastError}</p>}
 

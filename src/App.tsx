@@ -5,6 +5,7 @@ import TimedQuiz from './components/TimedQuiz'
 import SummaryPanel from './components/SummaryPanel'
 import SheetSelector from './components/SheetSelector'
 import SessionPreview from './components/SessionPreview'
+import ListQuiz from './components/ListQuiz'
 import type { QuizMode, QuizQuestion, QuizSummary } from './types'
 import { fetchQuestionsFromCsv } from './utils/csv'
 import { shuffle } from './utils/shuffle'
@@ -247,7 +248,11 @@ function App() {
       {view === 'quiz' && !!questions.length && (
         <>
           {mode === 'learning' ? (
-            <LearningQuiz key={runKey} questions={questions} onExit={handleRestart} onComplete={handleComplete} />
+            configSnapshot?.questionLayout === 'list' ? (
+              <ListQuiz key={runKey} questions={questions} onExit={handleRestart} onComplete={handleComplete} />
+            ) : (
+              <LearningQuiz key={runKey} questions={questions} onExit={handleRestart} onComplete={handleComplete} />
+            )
           ) : (
             <TimedQuiz
               key={runKey}
