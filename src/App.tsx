@@ -308,10 +308,25 @@ function App() {
         <>
           {mode === 'learning' ? (
             configSnapshot?.questionLayout === 'list' ? (
-              <ListQuiz key={runKey} questions={questions} onExit={handleRestart} onComplete={handleComplete} />
+              <ListQuiz
+                key={runKey}
+                mode="learning"
+                questions={questions}
+                onExit={handleRestart}
+                onComplete={handleComplete}
+              />
             ) : (
               <LearningQuiz key={runKey} questions={questions} onExit={handleRestart} onComplete={handleComplete} />
             )
+          ) : configSnapshot?.questionLayout === 'list' ? (
+            <ListQuiz
+              key={runKey}
+              mode="timed"
+              timeLimitMinutes={configSnapshot?.timeLimitMinutes ?? 20}
+              questions={questions}
+              onExit={handleRestart}
+              onComplete={handleComplete}
+            />
           ) : (
             <TimedQuiz
               key={runKey}

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { QuizMode } from '../types'
 
 export interface QuizConfig {
@@ -50,12 +50,6 @@ const QuizConfigurator = ({
   const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>('quickstart')
   const [questionLayout, setQuestionLayout] = useState<'single' | 'list'>('single')
   const [formError, setFormError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (mode === 'timed' && questionLayout === 'list') {
-      setQuestionLayout('single')
-    }
-  }, [mode, questionLayout])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -280,17 +274,20 @@ const QuizConfigurator = ({
             />
             Single-Card View — Focus on one question before moving to the next.
           </label>
-          <label className={`radio ${mode === 'timed' ? 'radio--disabled' : ''}`}>
+          <label className="radio">
             <input
               type="radio"
               name="layout"
               value="list"
               checked={questionLayout === 'list'}
               onChange={() => setQuestionLayout('list')}
-              disabled={loading || mode === 'timed'}
+              disabled={loading}
             />
-            Full list View — See the whole list of available questions in the set. 
+            Full list View — See the whole list of available questions in the set.
           </label>
+          {mode === 'timed' && (
+            <p className="subtle">Timed exams show the entire set without instant feedback. Answers stay editable.</p>
+          )}
         </fieldset>
 
         {formError && <p className="error">{formError}</p>}
