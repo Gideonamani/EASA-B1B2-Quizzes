@@ -465,6 +465,23 @@
   gap: 1.25rem;
 }
 
+.question-card__header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.question-card__number {
+  border-radius: 0.75rem;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.35rem 0.8rem;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
 .options {
   display: flex;
   flex-direction: column;
@@ -552,6 +569,32 @@
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.list-progress {
+  position: sticky;
+  top: 0.5rem;
+  background: var(--color-surface);
+  padding: 0.5rem 0 1rem;
+  z-index: 5;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.list-progress__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.list-progress__count {
+  color: var(--color-text);
+}
+
+.list-progress__percent {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
 }
 
 .nav-dot {
