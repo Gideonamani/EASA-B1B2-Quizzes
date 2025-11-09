@@ -44,6 +44,7 @@ const QuizConfigurator = ({
   const [selectedPresetUrl, setSelectedPresetUrl] = useState<string | null>(null)
   const [activeBankTab, setActiveBankTab] = useState<'quickstart' | 'custom'>('quickstart')
   const [questionLayout, setQuestionLayout] = useState<'single' | 'list'>('single')
+  const [formError, setFormError] = useState<string | null>(null)
 
   useEffect(() => {
     if (mode === 'timed' && questionLayout === 'list') {
@@ -54,8 +55,10 @@ const QuizConfigurator = ({
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!csvUrl.trim()) {
+      setFormError('Select a question set or paste a question bank URL before starting.')
       return
     }
+    setFormError(null)
     handleStartWithUrl(csvUrl.trim(), sourceLabel)
   }
 
@@ -76,12 +79,16 @@ const QuizConfigurator = ({
     setSourceLabel(set.label)
     setSelectedPresetUrl(set.url)
     setActiveBankTab('quickstart')
+    setFormError(null)
   }
 
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCsvUrl(event.target.value)
     setSourceLabel(undefined)
     setSelectedPresetUrl(null)
+    if (formError) {
+      setFormError(null)
+    }
   }
 
   return (
@@ -272,6 +279,7 @@ const QuizConfigurator = ({
           {mode === 'timed' && <p className="subtle">List view is available in Learning mode only.</p>}
         </fieldset>
 
+        {formError && <p className="error">{formError}</p>}
         {lastError && <p className="error">{lastError}</p>}
 
         <button type="submit" className="primary" disabled={loading}>
