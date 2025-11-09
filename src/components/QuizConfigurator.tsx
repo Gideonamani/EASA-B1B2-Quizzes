@@ -263,7 +263,7 @@ const QuizConfigurator = ({
               onChange={() => setQuestionLayout('single')}
               disabled={loading}
             />
-            Single-Card View - Focus on one question before moving to the next.
+            Single-Card View — Focus on one question before moving to the next.
           </label>
           <label className={`radio ${mode === 'timed' ? 'radio--disabled' : ''}`}>
             <input
@@ -274,7 +274,7 @@ const QuizConfigurator = ({
               onChange={() => setQuestionLayout('list')}
               disabled={loading || mode === 'timed'}
             />
-            Full list View - See the whole list of available questions in the set. 
+            Full list View — See the whole list of available questions in the set. 
           </label>
         </fieldset>
 

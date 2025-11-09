@@ -40,7 +40,7 @@ const SessionPreview = ({
       <p className="subtle">Double-check these settings before you dive in.</p>
       <ul className="preview-list">
         <li>
-          <strong>Mode:</strong> {mode === 'learning' ? 'Learning (one at a time)' : 'Timed exam'}
+          <strong>Mode:</strong> {mode === 'learning' ? 'Learning practice' : 'Timed exam'}
         </li>
         {mode === 'timed' && timeLimitMinutes && (
           <li>
