@@ -238,8 +238,10 @@ function App() {
               type="button"
               className="theme-toggle"
               onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
             >
-              {theme === 'light' ? '🌞 Light' : '🌙 Dark'}
+              {theme === 'light' ? '🌙' : '🌞'}
             </button>
           </div>
         </header>
