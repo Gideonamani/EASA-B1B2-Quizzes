@@ -51,6 +51,11 @@ function App() {
   const [featuredSets, setFeaturedSets] = useState<FeaturedQuestionSet[]>([])
   const [featuredSetsLoading, setFeaturedSetsLoading] = useState(true)
   const [featuredSetsError, setFeaturedSetsError] = useState<string | null>(null)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
 
   useEffect(() => {
     const linkInfo = parseGoogleSheetLink(FEATURED_SHEET_URL)
@@ -207,12 +212,21 @@ function App() {
   return (
     <>
       <div className="app">
-      <header className="app__header">
-        <div>
-          <p className="eyebrow">EASA B1/B2 Self-Study</p>
-          <h1>Train with purpose. Pass with confidence.</h1>
-        </div>
-      </header>
+        <header className="app__header">
+          <div className="app__top">
+            <div>
+              <p className="eyebrow">EASA B1/B2 Self-Study</p>
+              <h1>Train with purpose. Pass with confidence.</h1>
+            </div>
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
+            >
+              {theme === 'light' ? '🌞 Light' : '🌙 Dark'}
+            </button>
+          </div>
+        </header>
 
       {view === 'config' && (
         <QuizConfigurator
