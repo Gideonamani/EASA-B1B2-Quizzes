@@ -277,6 +277,7 @@ function App() {
           timeLimitMinutes={pendingSession.config.timeLimitMinutes}
           sheetsLabel={pendingSession.sheetsLabel || pendingSession.config.sourceLabel}
           shuffle={pendingSession.config.shuffle}
+          questionLayout={pendingSession.config.questionLayout}
           onAdjust={() => setPendingSession(null)}
           onLaunch={launchSession}
         />

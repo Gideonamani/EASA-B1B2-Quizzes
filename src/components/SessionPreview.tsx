@@ -6,11 +6,23 @@ interface Props {
   timeLimitMinutes?: number
   sheetsLabel?: string
   shuffle: boolean
+  questionLayout: 'single' | 'list'
   onAdjust(): void
   onLaunch(): void
 }
 
-const SessionPreview = ({ questionCount, mode, timeLimitMinutes, sheetsLabel, shuffle, onAdjust, onLaunch }: Props) => {
+const SessionPreview = ({
+  questionCount,
+  mode,
+  timeLimitMinutes,
+  sheetsLabel,
+  shuffle,
+  questionLayout,
+  onAdjust,
+  onLaunch,
+}: Props) => {
+  const layoutLabel = questionLayout === 'list' ? 'All questions (list view)' : 'Single-card (one at a time)'
+
   return (
     <Modal
       title="Ready to launch"
@@ -37,6 +49,9 @@ const SessionPreview = ({ questionCount, mode, timeLimitMinutes, sheetsLabel, sh
         )}
         <li>
           <strong>Questions:</strong> {questionCount}
+        </li>
+        <li>
+          <strong>Layout:</strong> {layoutLabel}
         </li>
         {sheetsLabel && (
           <li>
