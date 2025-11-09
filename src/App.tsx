@@ -169,6 +169,9 @@ function App() {
   const handleComplete = (quizSummary: QuizSummary) => {
     setSummary(quizSummary)
     setView('summary')
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   const handleRestart = () => {
