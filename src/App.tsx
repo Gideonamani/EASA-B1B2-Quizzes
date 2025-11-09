@@ -37,6 +37,17 @@ const FEATURED_SHEET_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRm9auFh31r-1f2cVzGlGTxxfonbH-m7eiGa_mKwYRZO4F0yuZRJob4BubJ8SH2y3a5Rb12Ccbf-axu/pub?output=csv'
 const FEEDBACK_FORM_URL = 'https://forms.gle/ameMentorFeedback'
 
+const getInitialTheme = (): 'light' | 'dark' => {
+  if (typeof window === 'undefined') {
+    return 'light'
+  }
+  const stored = window.localStorage.getItem('ame-theme')
+  if (stored === 'light' || stored === 'dark') {
+    return stored
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 function App() {
   const [view, setView] = useState<View>('config')
   const [mode, setMode] = useState<QuizMode>('learning')
@@ -51,10 +62,15 @@ function App() {
   const [featuredSets, setFeaturedSets] = useState<FeaturedQuestionSet[]>([])
   const [featuredSetsLoading, setFeaturedSetsLoading] = useState(true)
   const [featuredSetsError, setFeaturedSetsError] = useState<string | null>(null)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => getInitialTheme())
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme
+    if (typeof document !== 'undefined') {
+      document.documentElement.dataset.theme = theme
+    }
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('ame-theme', theme)
+    }
   }, [theme])
 
   useEffect(() => {
