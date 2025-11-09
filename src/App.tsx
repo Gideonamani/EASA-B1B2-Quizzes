@@ -246,6 +246,9 @@ function App() {
     setPendingSession(null)
     setSheetSelection(null)
     setView('quiz')
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   return (
